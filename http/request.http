@@ -1,0 +1,31 @@
+POST {{$dotenv host}}/products
+Content-Type: application/json
+
+{
+  "name": "Product#1",
+  "desc": "Product#1 Desc",
+  "price": 2000,
+  "categoryIds": [1, 2]
+}
+
+###
+
+PATCH {{$dotenv host}}/products/1
+Content-Type: application/json
+
+{
+  "name": "Product-1"
+}
+
+###
+
+GET {{$dotenv host}}/products
+
+
+###
+
+GET {{$dotenv host}}/products/11
+
+###
+
+DELETE {{$dotenv host}}/products/1
