@@ -24,7 +24,7 @@ GET {{$dotenv host}}/products
 
 ###
 
-GET {{$dotenv host}}/products/11
+GET {{$dotenv host}}/products/1
 
 ###
 
