@@ -21,6 +21,9 @@ export class ProductResponseDto {
   price: number;
 
   @Expose()
+  image: string;
+
+  @Expose()
   @Type(() => CategoryResponseDto)
   categories: Category[];
 

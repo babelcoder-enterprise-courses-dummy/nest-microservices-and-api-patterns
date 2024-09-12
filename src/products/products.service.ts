@@ -8,6 +8,8 @@ import { omit } from 'lodash';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UniqueConstraintError } from 'src/core/errors/unique-constraint.error';
 import { RecordNotFoundError } from 'src/core/errors/record-not-found.error';
+import { join } from 'path';
+import { rm } from 'fs/promises';
 
 @Injectable()
 export class ProductsService {
@@ -76,6 +78,8 @@ export class ProductsService {
 
   async update(id: number, form: UpdateProductDto, filepath?: string) {
     try {
+      if (filepath) await this.removeImage(id);
+
       return await this.prisma.product.update({
         where: { id },
         data: {
@@ -101,6 +105,19 @@ export class ProductsService {
       if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
         throw new RecordNotFoundError();
       }
+    }
+  }
+
+  private async removeImage(productId: number) {
+    const existingProduct = await this.findById(productId);
+
+    if (existingProduct.image) {
+      const imagePath = join(
+        __dirname,
+        `../../uploads/products/${existingProduct.image}`,
+      );
+
+      await rm(imagePath, { force: true });
     }
   }
 }
