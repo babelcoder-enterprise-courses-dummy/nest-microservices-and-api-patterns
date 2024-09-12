@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -12,11 +13,15 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { faker } from '@faker-js/faker';
 import { ProductsService } from './products.service';
 import { FindAllQueryDto } from './dtos/find-all-query.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductResponseDto } from './dtos/product-response.dto';
+import { ProductListResponseDto } from './dtos/product-list-response.dto';
+import { UniqueConstraintError } from 'src/core/errors/unique-constraint.error';
+import { RecordNotFoundError } from 'src/core/errors/record-not-found.error';
 
 @Controller('products')
 export class ProductsController {
@@ -24,54 +29,73 @@ export class ProductsController {
 
   // GET /products, GET /products?page=2&limit=20
   @Get()
-  findAll(@Query() query: FindAllQueryDto) {
-    const products = this.productsService.findAll(query);
+  async findAll(@Query() query: FindAllQueryDto) {
+    const itemsPaging = await this.productsService.findAll({
+      page: query.page,
+      limit: query.limit,
+    });
 
-    return products.map((p) => new ProductResponseDto(p));
+    return new ProductListResponseDto(itemsPaging);
   }
 
   // GET /products/:id
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    try {
-      const product = this.productsService.findById(id);
+  @Get(':idOrSlug')
+  async findOne(@Param('idOrSlug') idOrSlug: string) {
+    const product = await this.productsService.findByIdOrSlug(idOrSlug);
 
-      return new ProductResponseDto(product);
-    } catch {
-      throw new NotFoundException();
-    }
+    if (!product) throw new NotFoundException();
+
+    return new ProductResponseDto(product);
   }
 
   // POST /products
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() form: CreateProductDto) {
-    const product = this.productsService.create(form);
-    return new ProductResponseDto(product);
+  async create(@Body() form: CreateProductDto) {
+    try {
+      const product = await this.productsService.create(
+        form,
+        faker.image.url(),
+      );
+
+      return new ProductResponseDto(product);
+    } catch (e) {
+      if (e instanceof UniqueConstraintError) {
+        throw new BadRequestException(e.message);
+      }
+    }
   }
 
   // PATCH /products/:id
   @Patch(':id')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() form: UpdateProductDto,
   ) {
     try {
-      const product = this.productsService.update(id, form);
+      const product = await this.productsService.update(
+        id,
+        form,
+        faker.image.url(),
+      );
+
       return new ProductResponseDto(product);
-    } catch {
-      throw new NotFoundException();
+    } catch (e) {
+      if (e instanceof RecordNotFoundError) throw new NotFoundException();
+      if (e instanceof UniqueConstraintError) {
+        throw new BadRequestException(e.message);
+      }
     }
   }
 
   // DELETE /products/:id
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async destroy(@Param('id', ParseIntPipe) id: number) {
     try {
-      this.productsService.remove(id);
-    } catch {
-      throw new NotFoundException();
+      return await this.productsService.destroy(id);
+    } catch (e) {
+      if (e instanceof RecordNotFoundError) throw new NotFoundException();
     }
   }
 }

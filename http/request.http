@@ -10,7 +10,7 @@ Content-Type: application/json
 
 ###
 
-PATCH {{$dotenv host}}/products/1
+PATCH {{$dotenv host}}/products/99
 Content-Type: application/json
 
 {
@@ -19,13 +19,45 @@ Content-Type: application/json
 
 ###
 
-GET {{$dotenv host}}/products
+GET {{$dotenv host}}/products?page=3&limit=5
 
 
 ###
 
-GET {{$dotenv host}}/products/1
+GET {{$dotenv host}}/products/aestas
 
 ###
 
-DELETE {{$dotenv host}}/products/1
+DELETE {{$dotenv host}}/products/99
+
+###
+
+GET {{$dotenv host}}/categories
+
+###
+
+GET {{$dotenv host}}/categories/1
+
+###
+
+POST {{$dotenv host}}/categories
+Content-Type: application/json
+
+{
+  "name": "MyCat",
+  "desc": "MyCat-Desc"
+}
+
+###
+
+PATCH {{$dotenv host}}/categories/21
+Content-Type: application/json
+
+{
+  "name": "MyCat21",
+  "desc": "MyCat-Desc21"
+}
+
+###
+
+DELETE {{$dotenv host}}/categories/21

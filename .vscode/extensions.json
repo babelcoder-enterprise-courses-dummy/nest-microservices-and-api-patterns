@@ -2,6 +2,7 @@
     "recommendations": [
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
-        "humao.rest-client"
+        "humao.rest-client",
+        "prisma.prisma"
     ]
 }
