@@ -18,6 +18,8 @@ import { CreateCategoryDto } from './dtos/create-category.dto';
 import { UniqueConstraintError } from 'src/core/errors/unique-constraint.error';
 import { UpdateCategoryDto } from './dtos/update-category.dto';
 import { RecordNotFoundError } from 'src/core/errors/record-not-found.error';
+import { Auth } from 'src/auth/guards/auth.guard';
+import { Role } from 'src/users/role.model';
 
 @Controller('categories')
 export class CategoriesController {
@@ -40,6 +42,7 @@ export class CategoriesController {
   }
 
   @Post()
+  @Auth(Role.Admin, Role.Moderator)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() form: CreateCategoryDto) {
     try {
@@ -54,6 +57,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @Auth(Role.Admin, Role.Moderator)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() form: UpdateCategoryDto,
@@ -73,6 +77,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @Auth(Role.Admin, Role.Moderator)
   @HttpCode(HttpStatus.NO_CONTENT)
   async destroy(@Param('id', ParseIntPipe) id: number) {
     try {

@@ -134,7 +134,7 @@ GET {{$dotenv host}}/products?page=3&limit=5
 
 ###
 
-GET {{$dotenv host}}/products/aestas
+GET {{$dotenv host}}/products/2
 
 ###
 
@@ -152,10 +152,11 @@ GET {{$dotenv host}}/categories/1
 
 POST {{$dotenv host}}/categories
 Content-Type: application/json
+Authorization: Bearer {{$dotenv accessToken}}
 
 {
-  "name": "MyCat",
-  "desc": "MyCat-Desc"
+  "name": "MyCat11",
+  "desc": "MyCat11-Desc"
 }
 
 ###
@@ -170,4 +171,36 @@ Content-Type: application/json
 
 ###
 
-DELETE {{$dotenv host}}/categories/21
+DELETE {{$dotenv host}}/categories/23
+Authorization: Bearer {{$dotenv accessToken}}
+
+###
+
+POST {{$dotenv host}}/orders
+Content-Type: application/json
+Authorization: Bearer {{$dotenv accessToken}}
+
+{
+  "items": [
+    {
+      "productId": 1,
+      "quantity": 2,
+      "price": 100
+    },
+    {
+      "productId": 2,
+      "quantity": 3,
+      "price": 1000
+    }
+  ]
+}
+
+###
+
+GET {{$dotenv host}}/orders
+Authorization: Bearer {{$dotenv accessToken}}
+
+###
+
+GET {{$dotenv host}}/orders/1001
+Authorization: Bearer {{$dotenv accessToken}}
