@@ -4,6 +4,7 @@ import { redisStore } from 'cache-manager-redis-yet';
 import type { RedisClientOptions } from 'redis';
 import { PrismaService } from './services/prisma.service';
 import { AuthModule } from 'src/auth/auth.module';
+import { TasksService } from './services/task.service';
 
 @Global()
 @Module({
@@ -23,7 +24,7 @@ import { AuthModule } from 'src/auth/auth.module';
       },
     }),
   ],
-  providers: [PrismaService, Logger],
+  providers: [PrismaService, Logger, TasksService],
   exports: [PrismaService, Logger],
 })
 export class CoreModule {}
