@@ -1,4 +1,6 @@
-import { Module } from '@nestjs/common';
+import { join } from 'path';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -6,16 +8,15 @@ import { ProductsModule } from './products/products.module';
 import { CoreModule } from './core/core.module';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { OrdersModule } from './orders/orders.module';
+import { LoggerMiddleware } from './logger.middleware';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       serveRoot: '/uploads',
-      rootPath: join(__dirname, '../uploads'),
+      rootPath: join(__dirname, '..', 'uploads'),
     }),
     ConfigModule.forRoot(),
     ProductsModule,
@@ -28,4 +29,8 @@ import { OrdersModule } from './orders/orders.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

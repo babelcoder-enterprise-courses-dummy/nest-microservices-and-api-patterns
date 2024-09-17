@@ -1,9 +1,9 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, Logger, Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
+import type { RedisClientOptions } from 'redis';
 import { PrismaService } from './services/prisma.service';
 import { AuthModule } from 'src/auth/auth.module';
-import { CacheModule } from '@nestjs/cache-manager';
-import { RedisClientOptions } from 'redis';
-import { redisStore } from 'cache-manager-redis-yet';
 
 @Global()
 @Module({
@@ -23,7 +23,7 @@ import { redisStore } from 'cache-manager-redis-yet';
       },
     }),
   ],
-  providers: [PrismaService],
-  exports: [PrismaService],
+  providers: [PrismaService, Logger],
+  exports: [PrismaService, Logger],
 })
 export class CoreModule {}
