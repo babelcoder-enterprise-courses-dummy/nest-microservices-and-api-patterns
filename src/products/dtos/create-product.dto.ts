@@ -16,11 +16,14 @@ export class CreateProductDto {
   @Length(10, 150)
   desc: string;
 
-  @Transform(({ value }) => +value)
   @IsNumber()
+  @Transform(({ value }) => +value)
   price: number;
 
-  @Transform(({ value }) => (value as string[]).map((i) => +i))
+  @Transform(({ value }) => {
+    const ids = Array.isArray(value) ? value : (value as string).split(',');
+    return ids.map((i) => +i);
+  })
   @IsArray()
   @IsNumber({}, { each: true })
   @ArrayMinSize(1)

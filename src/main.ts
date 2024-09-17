@@ -1,6 +1,7 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
@@ -39,6 +40,15 @@ async function bootstrap() {
       excludeExtraneousValues: true,
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('Shop API')
+    .setDescription('Online shopping platform')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
   await app.listen(process.env.PORT);
 }
 bootstrap();
