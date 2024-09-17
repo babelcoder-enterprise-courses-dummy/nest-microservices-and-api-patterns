@@ -161,11 +161,12 @@ Authorization: Bearer {{$dotenv accessToken}}
 
 ###
 
-PATCH {{$dotenv host}}/categories/21
+PATCH {{$dotenv host}}/categories/1
 Content-Type: application/json
+Authorization: Bearer {{$dotenv accessToken}}
 
 {
-  "name": "MyCat21",
+  "name": "MyCat111",
   "desc": "MyCat-Desc21"
 }
 

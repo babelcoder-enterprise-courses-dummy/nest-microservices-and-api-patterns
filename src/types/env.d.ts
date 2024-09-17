@@ -7,6 +7,8 @@ declare global {
       ACCESS_TOKEN_EXPIRES_IN: string;
       REFRESH_TOKEN_SECRET_KEY: string;
       REFRESH_TOKEN_EXPIRES_IN: string;
+      REDIS_HOST: string;
+      REDIS_PORT: number;
     }
   }
 }

@@ -8,3 +8,9 @@ services:
       POSTGRES_PASSWORD: mypassword
     volumes:
       - ./data/pg:/var/lib/postgresql/data
+  redis:
+    image: redis:7.2.5-alpine3.20
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis:/data
