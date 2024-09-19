@@ -9,6 +9,7 @@ import {
   Logger,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UnprocessableEntityException,
@@ -30,7 +31,7 @@ import { Cache } from 'cache-manager';
 @UseInterceptors(CacheInterceptor)
 export class CategoriesController {
   constructor(
-    private categoriesService: CategoriesService,
+    private readonly categoriesService: CategoriesService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
     private readonly logger: Logger,
   ) {}
@@ -44,7 +45,7 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     const category = await this.categoriesService.findById(id);
 
     if (!category) throw new NotFoundException();

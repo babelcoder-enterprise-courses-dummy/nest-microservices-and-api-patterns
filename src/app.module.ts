@@ -20,7 +20,9 @@ import { LoggerMiddleware } from './logger.middleware';
       serveRoot: '/uploads',
       rootPath: join(__dirname, '..', 'uploads'),
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: [`.env.${process.env.NODE_ENV ?? 'development'}`],
+    }),
     ProductsModule,
     CoreModule,
     UsersModule,
