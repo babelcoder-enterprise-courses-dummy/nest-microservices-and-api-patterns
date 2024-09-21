@@ -2,20 +2,27 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ClassSerializerInterceptor, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { PrismaClient } from '@prisma/client';
 import { Reflector } from '@nestjs/core';
 import { omit } from 'lodash';
+import { RedisStore } from 'cache-manager-redis-yet';
+import { RedisClientType } from 'redis';
+import { CacheOptions } from '@nestjs/cache-manager';
+import { PrismaService } from 'src/core/services/prisma.service';
 
 describe('CategoriesController (e2e)', () => {
   let app: INestApplication;
-  const prisma = new PrismaClient();
+  let prisma: PrismaService;
+  let redis: RedisClientType;
 
   beforeEach(async () => {
-    await prisma.category.deleteMany();
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
+    redis = (
+      moduleFixture.get<CacheOptions>('CACHE_MANAGER')
+        .store as RedisStore<RedisClientType>
+    ).client;
+    prisma = moduleFixture.get<PrismaService>(PrismaService);
 
     app = moduleFixture.createNestApplication();
     app.useGlobalInterceptors(
@@ -24,10 +31,13 @@ describe('CategoriesController (e2e)', () => {
       }),
     );
     await app.init();
+    await prisma.category.deleteMany();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await prisma.$disconnect();
+    await redis.disconnect();
+    await app.close();
   });
 
   it('/categories/:id (GET)', async () => {
